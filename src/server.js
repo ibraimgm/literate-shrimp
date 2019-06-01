@@ -8,7 +8,9 @@ class Server {
   startup() {
     this.setupRoutes();
 
-    this.app.listen(3000, () => process.stdout.write('Listening...\n'));
+    this.app.listen(process.env.PORT || 3000, () =>
+      process.stdout.write('Listening...\n')
+    );
   }
 
   setupRoutes() {

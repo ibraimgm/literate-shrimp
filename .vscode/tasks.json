@@ -6,7 +6,7 @@
     {
       "label": "Start App (Dev)",
       "type": "npm",
-      "script": "start",
+      "script": "dev",
       "problemMatcher": []
     },
     {
@@ -18,15 +18,13 @@
     {
       "label": "Start App (Prod)",
       "type": "npm",
-      "script": "serve",
+      "script": "start",
       "problemMatcher": []
     },
     {
       "type": "npm",
       "script": "lint",
-      "problemMatcher": [
-        "$eslint-stylish"
-      ]
+      "problemMatcher": ["$eslint-stylish"]
     }
   ]
 }
