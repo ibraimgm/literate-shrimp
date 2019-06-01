@@ -1,5 +1,9 @@
-import Server from './server';
+import http from 'http';
+import app from './app';
 
-const server = new Server();
+const port = process.env.PORT || 3000;
+const server = http.createServer(app);
 
-server.startup();
+server.listen(port);
+
+process.stdout.write(`Listening on port ${port}...\n`);
