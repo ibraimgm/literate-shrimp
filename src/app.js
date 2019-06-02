@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
 import admin from './routes/admin';
+import transaction from './routes/transaction';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 
 // endpoints
 app.use('/admin', admin);
+app.use('/transaction', transaction);
 
 // erros
 app.use((req, res) => {
