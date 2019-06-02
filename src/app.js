@@ -47,10 +47,16 @@ app.use((req, res) => {
   res.json({ message: 'Not found' });
 });
 
-app.use((error, req, res) => {
-  res.status(error.status || 500);
-  res.json({
-    message: error.message
+// eslint-disable-next-line no-unused-vars
+app.use((error, req, res, next) => {
+  const statusCode = error.status || 500;
+  const message = statusCode === 500 ? 'Internal server error' : error.message;
+
+  process.stdout.write(`${error.stack}\n`);
+
+  res.status(statusCode).json({
+    statusCode,
+    message
   });
 });
 
