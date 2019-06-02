@@ -1,10 +1,16 @@
 import express from 'express';
+
+import auth from '../auth';
 import TransactionController from '../controllers/transaction';
 
 const router = express.Router();
 
 /**
  * @swagger
+ * securityDefinitions:
+ *   basicAuth:
+ *     type: basic
+ *
  * definitions:
  *   mensagem:
  *     properties:
@@ -86,6 +92,8 @@ const router = express.Router();
  *     description: Registra uma nova transação
  *     produces:
  *       - application/json
+ *     security:
+ *       - basicAuth: []
  *     parameters:
  *       - name: transacao
  *         description: Transação a ser incluída
@@ -107,7 +115,7 @@ const router = express.Router();
  *         schema:
  *           $ref: '#/definitions/erro'
  */
-router.post('/', TransactionController.registerTransaction);
+router.post('/', auth.terminalOnly, TransactionController.registerTransaction);
 
 /**
  * @swagger
@@ -119,6 +127,8 @@ router.post('/', TransactionController.registerTransaction);
  *     description: Lista todas as transações armazenadas
  *     produces:
  *       - application/json
+ *     security:
+ *       - basicAuth: []
  *     responses:
  *       200:
  *         description: Lista de transações registradas
@@ -127,7 +137,7 @@ router.post('/', TransactionController.registerTransaction);
  *           items:
  *             $ref: '#/definitions/transacao_saida'
  */
-router.get('/', TransactionController.getAllTransactions);
+router.get('/', auth.portalOnly, TransactionController.getAllTransactions);
 
 /**
  * @swagger
@@ -139,6 +149,8 @@ router.get('/', TransactionController.getAllTransactions);
  *     description: Retorna o saldo disponível e a receber.
  *     produces:
  *       - application/json
+ *     security:
+ *       - basicAuth: []
  *     responses:
  *       200:
  *         description: Total dos valores disponíveis e a receber.
@@ -147,6 +159,6 @@ router.get('/', TransactionController.getAllTransactions);
  *           items:
  *             $ref: '#/definitions/saldo'
  */
-router.get('/balance', TransactionController.getBalance);
+router.get('/balance', auth.portalOnly, TransactionController.getBalance);
 
 export default router;
