@@ -2,7 +2,9 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import swaggerUi from 'swagger-ui-express';
 
+import swaggerSpec from './swaggerSpec';
 import admin from './routes/admin';
 import transaction from './routes/transaction';
 
@@ -26,6 +28,14 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// swagger
+app.get('/docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // endpoints
 app.use('/admin', admin);
