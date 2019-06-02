@@ -20,3 +20,11 @@ export const proximoDiaUtil = m => {
     m.add(1, 'd');
   }
 };
+
+export const handleErrors = (e, res, next) => {
+  if (e.statusCode) {
+    res.status(e.statusCode).json(e);
+  } else {
+    next(e);
+  }
+};
