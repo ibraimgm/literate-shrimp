@@ -8,7 +8,8 @@ import {
   isValidDateFormat,
   enumToStr,
   proximoDiaUtil,
-  zerarHora
+  zerarHora,
+  handleErrors
 } from '../util';
 
 const VALOR_MINIMO = 0; /*0.01*/
@@ -136,6 +137,10 @@ const criarTransacao = t => {
   );
 };
 
+/*
+  Cria uma nova transação. Observe que a data disponível é calculada com referência ao mesmo
+  timezone do horário informado.
+ */
 const registerTransaction = (req, res, next) => {
   validarNsu({
     nsu: req.body.nsu,
@@ -155,15 +160,49 @@ const registerTransaction = (req, res, next) => {
         .status(201)
         .json({ message: `Registrada transação com nsu '${saved.nsu}'.` });
     })
-    .catch(e => {
-      if (e.statusCode) {
-        res.status(e.statusCode).json(e);
-      } else {
-        next(e);
-      }
-    });
+    .catch(e => handleErrors(e, res, next));
+};
+
+/*
+  Lista todas as transações.
+  Observe que apenas os campos 'que interessam' são exibidos, e que a data é reformatada
+  para manter a consistência no retorno.
+*/
+const getAllTransactions = (_, res, next) => {
+  Transaction.find({})
+    .then(docs =>
+      res.status(200).json(
+        docs
+          .map(
+            ({
+              nsu,
+              valor,
+              bandeira,
+              modalidade,
+              horario,
+              disponivel,
+              liquido
+            }) => ({
+              nsu,
+              valor,
+              bandeira,
+              modalidade,
+              horario,
+              disponivel,
+              liquido
+            })
+          )
+          .map(d => {
+            d.horario = moment(d.horario).toISOString(true);
+            d.disponivel = moment(d.disponivel).toISOString(true);
+            return d;
+          })
+      )
+    )
+    .catch(e => handleErrors(e, res, next));
 };
 
 export default {
-  registerTransaction
+  registerTransaction,
+  getAllTransactions
 };
