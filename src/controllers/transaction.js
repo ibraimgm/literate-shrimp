@@ -202,7 +202,33 @@ const getAllTransactions = (_, res, next) => {
     .catch(e => handleErrors(e, res, next));
 };
 
+const getBalance = (_, res, next) => {
+  const limit = moment();
+  zerarHora(limit);
+  limit.add(1, 'day');
+
+  Transaction.find({})
+    .then(docs => {
+      res.status(200).json(
+        docs.reduce(
+          (acc, d) => {
+            if (limit.isAfter(d.disponivel)) {
+              acc.disponivel += d.liquido;
+            } else {
+              acc.receber += d.liquido;
+            }
+
+            return acc;
+          },
+          { disponivel: 0, receber: 0 }
+        )
+      );
+    })
+    .catch(e => handleErrors(e, res, next));
+};
+
 export default {
   registerTransaction,
-  getAllTransactions
+  getAllTransactions,
+  getBalance
 };

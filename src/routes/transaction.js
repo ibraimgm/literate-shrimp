@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post('/', TransactionController.registerTransaction);
 router.get('/', TransactionController.getAllTransactions);
+router.get('/balance', TransactionController.getBalance);
 
 export default router;
