@@ -207,23 +207,29 @@ const getBalance = (_, res, next) => {
   zerarHora(limit);
   limit.add(1, 'day');
 
-  Transaction.find({})
-    .then(docs => {
-      res.status(200).json(
-        docs.reduce(
-          (acc, d) => {
-            if (limit.isAfter(d.disponivel)) {
-              acc.disponivel += d.liquido;
-            } else {
-              acc.receber += d.liquido;
-            }
-
-            return acc;
-          },
-          { disponivel: 0, receber: 0 }
-        )
-      );
-    })
+  Transaction.aggregate([
+    {
+      $group: {
+        _id: null,
+        disponivel: {
+          $sum: {
+            $cond: [{ $lt: ['$disponivel', limit.toDate()] }, '$liquido', 0]
+          }
+        },
+        receber: {
+          $sum: {
+            $cond: [{ $gte: ['$disponivel', limit.toDate()] }, '$liquido', 0]
+          }
+        }
+      }
+    },
+    { $project: { _id: 0, disponivel: 1, receber: 1 } }
+  ])
+    .then(balance =>
+      res
+        .status(200)
+        .json(balance.length > 0 ? balance[0] : { disponivel: 0, receber: 0 })
+    )
     .catch(e => handleErrors(e, res, next));
 };
 
